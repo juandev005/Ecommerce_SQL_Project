@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres
+    restart: always
+    
+    ports:
+      - "5432:5432"
+    
+    environment:
+      DATABASE_HOST : 127.0.0.1
+      POSTGRES_USER: PUBLIC
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: root
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U PUBLIC -d root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "juan05@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "12345678"
+    
+    ports:
+      - "5050:80"
+
+    depends_on:
+      postgres
+
+  metabase:
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE: "postgres"
+      MB_DB_HOST: "postgres"
+      MB_DB_PORT: "5432"
+      MB_DB_USER: "PUBLIC"
+      MB_DB_PASS: "12345678"
+      MB_DB_DBNAME: "root"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
