@@ -1,0 +1,1 @@
+CREATE TYPE order_statuses AS ENUM ('delivered','shipped','canceled','processing','invoiced','unavailable','approved','created');
